@@ -1,0 +1,4 @@
+EmployeeID,FullName,Position,TotalSalesContracts,TotalSalesVolume,EarnedCommission
+1,Amir Khorsandi,Sales Manager,1,14500.00,725.00000000
+2,Mina Amiri,Rental Agent,1,2800.00,70.00000000
+3,Ali Fanian,Sales Manager & Rental Agent,1,35000.00,2450.00000000
