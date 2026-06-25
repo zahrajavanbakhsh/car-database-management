@@ -1,6 +1,8 @@
+USE CarManagement_Final;
+GO
+
 -- views
 -- available cars for employees and costumers
-GO
 CREATE VIEW vw_AvailableCars AS
 SELECT 
     c.CarID, 
@@ -13,9 +15,9 @@ SELECT
 FROM Car c
 JOIN Manufacturer m ON c.ManufacturerID = m.ManufacturerID
 WHERE c.CurrentStatus = 'Available';
+GO
 
 -- ROI for manager
-GO
 CREATE VIEW vw_CarROI_Analysis AS
 SELECT 
     c.CarID,
@@ -26,9 +28,9 @@ SELECT
     (ISNULL((SELECT SUM(TotalAmount) FROM Reservation WHERE CarID = c.CarID AND Status = 'Completed'), 0) - 
      ISNULL((SELECT SUM(Cost) FROM Repair WHERE CarID = c.CarID), 0)) AS NetProfit
 FROM Car c;
+GO
 
 -- good customers for manager
-GO
 CREATE VIEW vw_CustomerFinancialStatus AS
 SELECT 
     CustomerID,
@@ -37,9 +39,9 @@ SELECT
     WalletBalance,
     AccountStatus
 FROM Customer;
+GO
 
 -- classification of customers
-GO
 CREATE VIEW vw_CustomerRanking AS
 SELECT 
     CustomerID,
@@ -52,10 +54,9 @@ SELECT
     END AS CustomerCategory,
     ROW_NUMBER() OVER (ORDER BY WalletBalance DESC) AS WealthRank
 FROM Customer;
-
+GO
 
 -- total of a payment for each brand
-GO
 CREATE VIEW vw_IncomeReportByBrand AS
 SELECT 
     ISNULL(m.Name, '--- Grand Total ---') AS BrandName,
@@ -66,10 +67,9 @@ LEFT JOIN Car c ON r.CarID = c.CarID
 LEFT JOIN Manufacturer m ON c.ManufacturerID = m.ManufacturerID
 WHERE p.ReservationID IS NOT NULL
 GROUP BY ROLLUP(m.Name);
-
+GO
 
 -- commission of each employee
-GO
 CREATE VIEW vw_EmployeeCommissionReport AS
 SELECT 
     e.EmployeeID,
@@ -88,11 +88,7 @@ GROUP BY
     e.CommissionRate;
 GO
 
-USE CarManagementDB;
-GO
-
 -- Sales Revenue by Brand and Payment Method
-GO
 CREATE VIEW vw_Pivot_Sales_By_PaymentMethod AS
 SELECT * FROM (
     SELECT 
@@ -110,11 +106,7 @@ PIVOT (
 ) AS PivotTable;
 GO
 
-SELECT * FROM dbo.vw_Pivot_Sales_By_PaymentMethod;
-GO
-
 -- Comprehensive Sales Analysis by Brand and Year
-GO
 CREATE VIEW vw_Cube_RevenueAnalysis AS
 SELECT 
     ISNULL(m.Name, '--- All Brands ---') AS Brand,
@@ -126,11 +118,7 @@ JOIN Manufacturer m ON c.ManufacturerID = m.ManufacturerID
 GROUP BY CUBE(m.Name, c.BuildYear);
 GO
 
-SELECT * FROM dbo.vw_Cube_RevenueAnalysis;
-GO
-
 -- Find customers who only rent, but never buy
-GO
 CREATE VIEW vw_RentOnlyCustomers AS
 SELECT CustomerID, FirstName, LastName, NationalCode 
 FROM Customer
@@ -139,7 +127,4 @@ WHERE CustomerID IN (
     EXCEPT
     SELECT CustomerID FROM Sale
 );
-GO
-
-SELECT * FROM dbo.vw_RentOnlyCustomers;
 GO

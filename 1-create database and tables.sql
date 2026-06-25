@@ -1,7 +1,7 @@
--- create database and tables
-CREATE DATABASE CarManagementDB;
+-- 1-tables.sql
+CREATE DATABASE CarManagement_Final;
 GO
-USE CarManagementDB;
+USE CarManagement_Final;
 GO
 
 CREATE TABLE Manufacturer (
@@ -33,7 +33,7 @@ CREATE TABLE Employee (
 
 CREATE TABLE Car (
     CarID INT IDENTITY(1,1) PRIMARY KEY,
-    VIN NVARCHAR(17) NOT NULL UNIQUE,
+    VIN NVARCHAR(50) NOT NULL UNIQUE,
     ManufacturerID INT FOREIGN KEY REFERENCES Manufacturer(ManufacturerID),
     Model NVARCHAR(50) NOT NULL,
     BuildYear INT,
@@ -87,6 +87,13 @@ CREATE TABLE Payment (
     PaymentDate DATETIME DEFAULT GETDATE(),
     Method NVARCHAR(50) CHECK (Method IN ('Cash', 'Credit Card', 'Bank Transfer'))
 );
-GO
 
-SELECT * FROM Car
+CREATE TABLE AppUser (
+    UserID INT IDENTITY(1,1) PRIMARY KEY,
+    Username NVARCHAR(50) NOT NULL UNIQUE,
+    Password NVARCHAR(256) NOT NULL,
+    Role NVARCHAR(20) NOT NULL CHECK (Role IN ('Admin', 'Employee', 'Customer')),
+    EmployeeID INT NULL FOREIGN KEY REFERENCES Employee(EmployeeID),
+    CustomerID INT NULL FOREIGN KEY REFERENCES Customer(CustomerID)
+);
+GO
