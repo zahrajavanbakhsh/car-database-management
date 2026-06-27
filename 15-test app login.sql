@@ -1,7 +1,21 @@
 -- TEST APPLICATION LOGIN & AUTHENTICATION
-USE CarManagementDB;
+USE CarManagement_Final;
 GO
 SET NOCOUNT ON;
+
+BEGIN TRAN AppAuthTestTran;
+
+-- ==========================================
+-- 0. SETUP MOCK DATA
+-- ==========================================
+PRINT '>>> SETTING UP ISOLATED MOCK DATA (APP USERS) <<<';
+INSERT INTO AppUser (Username, Password, Role) VALUES 
+('admin1', '123', 'Admin'),
+('agent1', '123', 'Employee'),
+('mahdi1', '123', 'Customer'),
+('zahra1', '123', 'Customer');
+PRINT '>>> MOCK USERS CREATED IN MEMORY <<<';
+PRINT '';
 
 PRINT '--- APPLICATION AUTHENTICATION TESTS ---';
 PRINT '';
@@ -39,4 +53,8 @@ END TRY
 BEGIN CATCH
     SELECT ERROR_MESSAGE() AS [AUTH FAILED: User Not Found];
 END CATCH;
+
+ROLLBACK TRAN AppAuthTestTran;
+PRINT '';
+PRINT '--- TRANSACTION ROLLED BACK (Database remains untouched) ---';
 GO

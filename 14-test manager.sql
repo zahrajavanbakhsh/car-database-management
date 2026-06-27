@@ -1,10 +1,37 @@
 -- TEST MANAGER ROLE PRIVILEGES
-USE CarManagementDB;
+USE CarManagement_Final;
 GO
 SET NOCOUNT ON;
 
 BEGIN TRAN ManagerTestTran;
 PRINT '--- TRANSACTION STARTED: MANAGER ROLE TESTS ---';
+
+-- ==========================================
+-- 0. SETUP MOCK DATA
+-- ==========================================
+PRINT '>>> SETTING UP ISOLATED MOCK DATA <<<';
+
+-- Mock Employee for Commission Update
+INSERT INTO Employee (NationalCode, FirstName, LastName, Position, CommissionRate)
+VALUES ('3333333332', 'Mock', 'Emp', 'Agent', 5.00);
+
+-- Mock Customer & Car for Reservation
+INSERT INTO Customer (NationalCode, FirstName, LastName, Phone) VALUES ('4444444444', 'Mock', 'Cust', '09444444444');
+DECLARE @CustID INT = SCOPE_IDENTITY();
+
+INSERT INTO Manufacturer (Name, Country) VALUES ('MockManuf', 'MockLand');
+DECLARE @ManufID INT = SCOPE_IDENTITY();
+
+INSERT INTO Car (VIN, ManufacturerID, Model, BuildYear, DailyRentPrice, BaseSalePrice, CurrentStatus)
+VALUES ('VIN-MOCK-MGR', @ManufID, 'MgrCar', 2026, 50, 10000, 'Available');
+DECLARE @CarID INT = SCOPE_IDENTITY();
+
+-- Mock Cancelled Reservation
+INSERT INTO Reservation (CustomerID, CarID, StartDate, EndDate, Status)
+VALUES (@CustID, @CarID, GETDATE(), GETDATE(), 'Cancelled');
+
+PRINT '>>> MOCK DATA READY <<<';
+PRINT '';
 
 -- 1. Switch context to Manager
 EXECUTE AS LOGIN = 'CarManagerLogin';
@@ -13,12 +40,12 @@ PRINT '>>> LOGGED IN AS: MANAGER <<<';
 PRINT '';
 -- Scenario 1: View sensitive Income Report (Should Succeed)
 PRINT 'SCENARIO 1: View Income Report By Brand -> EXPECTED: SUCCESS';
-SELECT * FROM dbo.vw_IncomeReportByBrand;
+SELECT TOP 1 * FROM dbo.vw_IncomeReportByBrand;
 
 PRINT '';
 -- Scenario 2: View sensitive ROI Analysis (Should Succeed)
 PRINT 'SCENARIO 2: View ROI Analysis -> EXPECTED: SUCCESS';
-SELECT * FROM dbo.vw_CarROI_Analysis;
+SELECT TOP 1 * FROM dbo.vw_CarROI_Analysis;
 
 PRINT '';
 -- Scenario 3: Update employee commission rate (Should Succeed)
@@ -38,5 +65,5 @@ REVERT;
 PRINT '>>> REVERTED TO ADMIN <<<';
 
 ROLLBACK TRAN ManagerTestTran;
-PRINT '--- TRANSACTION ROLLED BACK ---';
+PRINT '--- TRANSACTION ROLLED BACK (Database remains untouched) ---';
 GO

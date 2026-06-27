@@ -2,6 +2,8 @@ USE CarManagement_Final;
 GO
 
 -- 1. renting a car (Register New Reservation)
+DROP PROCEDURE IF EXISTS sp_RegisterNewReservation;
+GO
 CREATE PROCEDURE sp_RegisterNewReservation
     @CustomerID INT,
     @CarID INT,
@@ -61,6 +63,8 @@ GO
 
 
 -- 2. buying a car (Register Car Sale)
+DROP PROCEDURE IF EXISTS sp_RegisterCarSale;
+GO
 CREATE PROCEDURE sp_RegisterCarSale
     @CustomerID INT,
     @CarID INT,
@@ -112,6 +116,8 @@ GO
 
 
 -- 3. the completion of reservation
+DROP PROCEDURE IF EXISTS sp_CompleteReservation;
+GO
 CREATE PROCEDURE sp_CompleteReservation
     @ReservationID INT
 AS
@@ -138,6 +144,8 @@ GO
 
 
 -- 4. automatic calculation of late fees
+DROP PROCEDURE IF EXISTS sp_ProcessCarReturnAndLateFees;
+GO
 CREATE PROCEDURE sp_ProcessCarReturnAndLateFees
     @ReservationID INT,
     @ActualReturnDate DATETIME
@@ -191,6 +199,8 @@ GO
 
 
 -- 5. pay penalty debt
+DROP PROCEDURE IF EXISTS sp_PayPenaltyDebt;
+GO
 CREATE PROCEDURE sp_PayPenaltyDebt
     @ReservationID INT, 
     @Amount DECIMAL(18,2)
@@ -205,6 +215,8 @@ GO
 
 
 -- 6. full log of a history of a car
+DROP PROCEDURE IF EXISTS sp_GetCarHistoryTimeline;
+GO
 CREATE PROCEDURE sp_GetCarHistoryTimeline
     @CarID INT
 AS
@@ -231,6 +243,8 @@ GO
 
 
 -- 7. Stored Procedure for verifying user credentials from the application
+DROP PROCEDURE IF EXISTS sp_UserLogin;
+GO
 CREATE PROCEDURE sp_UserLogin
     @InputUsername NVARCHAR(50),
     @InputPassword NVARCHAR(256)
